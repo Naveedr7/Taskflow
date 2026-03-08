@@ -3,7 +3,7 @@
    Strategy: Cache-First with background update
    ============================================================ */
 
-const CACHE_NAME = "taskflow-v1";
+const CACHE_NAME = "taskflow-v2";
 
 // All assets to pre-cache on install
 const ASSETS_TO_CACHE = [
