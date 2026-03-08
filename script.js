@@ -21,16 +21,16 @@ const STATUSES = ['todo', 'inprogress', 'done'];
 
 /** Priority configuration (display label + CSS class) */
 const PRIORITY_MAP = {
-  high:   { label: 'High',   className: 'priority-high'   },
+  high: { label: 'High', className: 'priority-high' },
   medium: { label: 'Medium', className: 'priority-medium' },
-  low:    { label: 'Low',    className: 'priority-low'    },
+  low: { label: 'Low', className: 'priority-low' },
 };
 
 /** Empty-state messages per column */
 const EMPTY_MESSAGES = {
-  todo:       'No tasks yet. Hit "+ Add Task" to get started.',
+  todo: 'No tasks yet. Hit "+ Add Task" to get started.',
   inprogress: 'Nothing in progress right now.',
-  done:       'No completed tasks yet.',
+  done: 'No completed tasks yet.',
 };
 
 /** Empty-state icons */
@@ -86,7 +86,7 @@ function generateId() {
  */
 function renderBoard() {
   STATUSES.forEach(status => {
-    const list    = document.getElementById(`list-${status}`);
+    const list = document.getElementById(`list-${status}`);
     const counter = document.getElementById(`count-${status}`);
 
     // Filter tasks belonging to this column
@@ -124,12 +124,30 @@ function renderBoard() {
  */
 function createCardElement(task) {
   const priority = PRIORITY_MAP[task.priority] || PRIORITY_MAP.medium;
+  const dueStatus = task.dueDate ? getDueStatus(task.dueDate) : null;
 
   const card = document.createElement('article');
   card.className = 'task-card';
+  if (dueStatus === 'overdue') card.classList.add('overdue-card');
+  if (dueStatus === 'soon') card.classList.add('soon-card');
   card.setAttribute('draggable', 'true');
   card.dataset.id = task.id;
   card.setAttribute('aria-label', `Task: ${task.title}`);
+
+  // Build due-date row if a reminder is set
+  let dueDateHtml = '';
+  if (task.dueDate) {
+    const dueLabel = dueStatus === 'overdue' ? '🔴 Overdue'
+      : dueStatus === 'soon' ? '🟡 Due soon'
+        : '⏰ Due';
+    const dueClass = dueStatus === 'overdue' ? 'due-overdue'
+      : dueStatus === 'soon' ? 'due-soon' : '';
+    dueDateHtml = `
+      <div class="card-due ${dueClass}">
+        <span class="due-icon">🕐</span>
+        <span>${dueLabel}: ${formatDueDate(task.dueDate)}</span>
+      </div>`;
+  }
 
   card.innerHTML = `
     <div class="card-top">
@@ -144,16 +162,15 @@ function createCardElement(task) {
       ? `<p class="card-desc">${escapeHtml(task.description)}</p>`
       : ''
     }
+    ${dueDateHtml}
   `;
 
-  // Attach drag events directly on the element
+  // Attach drag events
   card.addEventListener('dragstart', onDragStart);
-  card.addEventListener('dragend',   onDragEnd);
+  card.addEventListener('dragend', onDragEnd);
 
-  // Edit button
+  // Edit / Delete buttons
   card.querySelector('.card-btn.edit').addEventListener('click', () => openEditModal(task.id));
-
-  // Delete button — opens confirmation dialog
   card.querySelector('.card-btn.delete').addEventListener('click', () => openDeleteDialog(task.id));
 
   return card;
@@ -178,20 +195,22 @@ function escapeHtml(str) {
    ---------------------------------------------------------- */
 
 const modalOverlay = document.getElementById('modalOverlay');
-const taskForm     = document.getElementById('taskForm');
-const modalTitle   = document.getElementById('modalTitle');
-const editTaskId   = document.getElementById('editTaskId');
-const titleInput   = document.getElementById('taskTitle');
-const descInput    = document.getElementById('taskDesc');
+const taskForm = document.getElementById('taskForm');
+const modalTitle = document.getElementById('modalTitle');
+const editTaskId = document.getElementById('editTaskId');
+const titleInput = document.getElementById('taskTitle');
+const descInput = document.getElementById('taskDesc');
 const priorityInput = document.getElementById('taskPriority');
-const statusInput  = document.getElementById('taskStatus');
-const titleError   = document.getElementById('titleError');
+const statusInput = document.getElementById('taskStatus');
+const dueInput = document.getElementById('taskDue');
+const titleError = document.getElementById('titleError');
 
 /** Open the modal in "add new task" mode */
 function openAddModal() {
   modalTitle.textContent = 'New Task';
   taskForm.reset();
   editTaskId.value = '';
+  dueInput.value = '';
   titleError.textContent = '';
   openModal(modalOverlay);
   titleInput.focus();
@@ -206,11 +225,12 @@ function openEditModal(id) {
   if (!task) return;
 
   modalTitle.textContent = 'Edit Task';
-  editTaskId.value      = task.id;
-  titleInput.value      = task.title;
-  descInput.value       = task.description || '';
-  priorityInput.value   = task.priority;
-  statusInput.value     = task.status;
+  editTaskId.value = task.id;
+  titleInput.value = task.title;
+  descInput.value = task.description || '';
+  priorityInput.value = task.priority;
+  statusInput.value = task.status;
+  dueInput.value = task.dueDate || '';
   titleError.textContent = '';
 
   openModal(modalOverlay);
@@ -235,19 +255,23 @@ function handleFormSubmit(event) {
     // Update existing task
     const task = tasks.find(t => t.id === editTaskId.value);
     if (task) {
-      task.title       = title;
+      task.title = title;
       task.description = descInput.value.trim();
-      task.priority    = priorityInput.value;
-      task.status      = statusInput.value;
+      task.priority = priorityInput.value;
+      task.status = statusInput.value;
+      task.dueDate = dueInput.value || null;
+      // Allow re-notification if due date changed
+      if (task.dueDate) notifiedIds.delete(task.id);
     }
   } else {
     // Create a new task and append to the array
     tasks.push({
-      id:          generateId(),
+      id: generateId(),
       title,
       description: descInput.value.trim(),
-      priority:    priorityInput.value,
-      status:      statusInput.value,
+      priority: priorityInput.value,
+      status: statusInput.value,
+      dueDate: dueInput.value || null,
     });
   }
 
@@ -380,43 +404,132 @@ function seedDefaultTasks() {
 
   tasks = [
     {
-      id:          generateId(),
-      title:       'Design the new landing page',
+      id: generateId(),
+      title: 'Design the new landing page',
       description: 'Create wireframes and high-fidelity mockups for the marketing team to review.',
-      priority:    'high',
-      status:      'todo',
+      priority: 'high',
+      status: 'todo',
     },
     {
-      id:          generateId(),
-      title:       'Set up CI/CD pipeline',
+      id: generateId(),
+      title: 'Set up CI/CD pipeline',
       description: 'Configure GitHub Actions to run tests and deploy to staging automatically.',
-      priority:    'medium',
-      status:      'todo',
+      priority: 'medium',
+      status: 'todo',
     },
     {
-      id:          generateId(),
-      title:       'Refactor authentication module',
+      id: generateId(),
+      title: 'Refactor authentication module',
       description: 'Replace legacy JWT handling with the new secure token library.',
-      priority:    'high',
-      status:      'inprogress',
+      priority: 'high',
+      status: 'inprogress',
     },
     {
-      id:          generateId(),
-      title:       'Write unit tests for the API',
+      id: generateId(),
+      title: 'Write unit tests for the API',
       description: 'Cover all /users and /tasks endpoints with Mocha + Chai.',
-      priority:    'medium',
-      status:      'inprogress',
+      priority: 'medium',
+      status: 'inprogress',
     },
     {
-      id:          generateId(),
-      title:       'Update project README',
+      id: generateId(),
+      title: 'Update project README',
       description: 'Add setup instructions, environment variables, and contribution guidelines.',
-      priority:    'low',
-      status:      'done',
+      priority: 'low',
+      status: 'done',
     },
   ];
 
   saveTasks();
+}
+
+/* ----------------------------------------------------------
+   REMINDER / NOTIFICATION HELPERS
+   ---------------------------------------------------------- */
+
+/**
+ * Return 'overdue', 'soon' (≤ 60 min), or 'future'.
+ * @param {string} dueDateStr - ISO datetime string
+ */
+function getDueStatus(dueDateStr) {
+  const now = Date.now();
+  const due = new Date(dueDateStr).getTime();
+  const diff = due - now;          // ms; negative = overdue
+  if (diff < 0) return 'overdue';
+  if (diff <= 3_600_000) return 'soon';   // within 1 hour
+  return 'future';
+}
+
+/**
+ * Format a datetime string into a short, friendly label.
+ * @param {string} dueDateStr
+ * @returns {string}
+ */
+function formatDueDate(dueDateStr) {
+  const d = new Date(dueDateStr);
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (d.toDateString() === today.toDateString()) return `Today ${timeStr}`;
+  if (d.toDateString() === tomorrow.toDateString()) return `Tomorrow ${timeStr}`;
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ` ${timeStr}`;
+}
+
+/** Request browser notification permission */
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+}
+
+/** Track which task IDs have already been notified this session */
+const notifiedIds = new Set();
+
+/**
+ * Fire a browser notification for tasks due within the next 5 minutes
+ * (or up to 1 minute overdue). Each task notified only once per session.
+ */
+function checkReminders() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+  const now = Date.now();
+  const LEAD_MS = 5 * 60 * 1000; // notify 5 min before due
+  const GRACE_MS = 60 * 1000;     // still notify up to 1 min after due
+
+  tasks.forEach(task => {
+    if (!task.dueDate || task.status === 'done') return;
+    if (notifiedIds.has(task.id)) return;
+
+    const due = new Date(task.dueDate).getTime();
+    const diff = due - now;   // negative if overdue
+
+    if (diff <= LEAD_MS && diff >= -GRACE_MS) {
+      notifiedIds.add(task.id);
+
+      const body = diff <= 0
+        ? `"${task.title}" was due ${formatDueDate(task.dueDate)} — time to wrap up!`
+        : `"${task.title}" is due in ${Math.ceil(diff / 60_000)} min.`;
+
+      new Notification('TaskFlow Reminder 🔔', {
+        body,
+        icon: './assets/icon-192.png',
+        badge: './assets/icon-192.png',
+        vibrate: [200, 100, 200],
+        tag: task.id,   // replaces previous notification for same task
+      });
+    }
+  });
+}
+
+/** Start the reminder polling loop (every 30 seconds) */
+function startReminderChecker() {
+  requestNotificationPermission().then(() => {
+    checkReminders();                        // immediate check
+    setInterval(checkReminders, 30_000);     // then every 30 s
+  });
 }
 
 /* ----------------------------------------------------------
@@ -425,7 +538,6 @@ function seedDefaultTasks() {
 
 /**
  * Main init function — called once the DOM is ready.
- * Sets up event listeners and renders the initial board.
  */
 function init() {
   // Load persisted tasks (or seed defaults on first visit)
@@ -467,9 +579,12 @@ function init() {
   // -- Keyboard: close modals with Escape --
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
-    if (modalOverlay.classList.contains('open'))  closeModal(modalOverlay);
+    if (modalOverlay.classList.contains('open')) closeModal(modalOverlay);
     if (deleteOverlay.classList.contains('open')) closeModal(deleteOverlay);
   });
+
+  // -- Start reminder checker --
+  startReminderChecker();
 }
 
 // Kick everything off once the DOM is fully parsed

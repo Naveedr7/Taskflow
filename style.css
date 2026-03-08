@@ -9,44 +9,44 @@
    ---------------------------------------------------------- */
 :root {
   /* Color palette */
-  --color-bg:          #f4f5f7;
-  --color-surface:     #ffffff;
-  --color-border:      #e4e6ea;
-  --color-text-dark:   #1a1d23;
-  --color-text-muted:  #6b7280;
-  --color-text-light:  #9ca3af;
+  --color-bg: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-border: #e4e6ea;
+  --color-text-dark: #1a1d23;
+  --color-text-muted: #6b7280;
+  --color-text-light: #9ca3af;
 
   /* Brand accent */
-  --color-accent:      #5b5ef4;
+  --color-accent: #5b5ef4;
   --color-accent-dark: #4547d0;
   --color-accent-soft: #ededff;
 
   /* Column status dots */
-  --color-todo:        #94a3b8;
-  --color-inprogress:  #f59e0b;
-  --color-done:        #22c55e;
+  --color-todo: #94a3b8;
+  --color-inprogress: #f59e0b;
+  --color-done: #22c55e;
 
   /* Priority badges */
-  --color-high:        #ef4444;
-  --color-high-bg:     #fef2f2;
-  --color-medium:      #f59e0b;
-  --color-medium-bg:   #fffbeb;
-  --color-low:         #22c55e;
-  --color-low-bg:      #f0fdf4;
+  --color-high: #ef4444;
+  --color-high-bg: #fef2f2;
+  --color-medium: #f59e0b;
+  --color-medium-bg: #fffbeb;
+  --color-low: #22c55e;
+  --color-low-bg: #f0fdf4;
 
   /* Danger */
-  --color-danger:      #ef4444;
+  --color-danger: #ef4444;
   --color-danger-dark: #dc2626;
 
   /* Typography */
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
 
   /* Spacing scale */
-  --space-xs:  4px;
-  --space-sm:  8px;
-  --space-md:  16px;
-  --space-lg:  24px;
-  --space-xl:  32px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
   --space-2xl: 48px;
 
   /* Radii */
@@ -55,9 +55,9 @@
   --radius-lg: 16px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .07), 0 1px 2px rgba(0, 0, 0, .05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, .08), 0 2px 4px rgba(0, 0, 0, .05);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, .12), 0 4px 8px rgba(0, 0, 0, .06);
 
   /* Transitions */
   --transition: 0.18s ease;
@@ -66,7 +66,9 @@
 /* ----------------------------------------------------------
    2. CSS RESET + BASE
    ---------------------------------------------------------- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -85,7 +87,10 @@ body {
   min-height: 100vh;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   line-height: 1.3;
   font-weight: 600;
 }
@@ -97,7 +102,9 @@ button {
   background: none;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   font-family: inherit;
   font-size: 0.9375rem;
 }
@@ -171,13 +178,15 @@ ul {
 .btn-primary {
   background: var(--color-accent);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(91,94,244,.35);
+  box-shadow: 0 2px 8px rgba(91, 94, 244, .35);
 }
+
 .btn-primary:hover {
   background: var(--color-accent-dark);
-  box-shadow: 0 4px 14px rgba(91,94,244,.4);
+  box-shadow: 0 4px 14px rgba(91, 94, 244, .4);
   transform: translateY(-1px);
 }
+
 .btn-primary:active {
   transform: translateY(0);
 }
@@ -188,6 +197,7 @@ ul {
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
 }
+
 .btn-ghost:hover {
   background: var(--color-bg);
   color: var(--color-text-dark);
@@ -198,6 +208,7 @@ ul {
   background: var(--color-danger);
   color: #fff;
 }
+
 .btn-danger:hover {
   background: var(--color-danger-dark);
   transform: translateY(-1px);
@@ -216,7 +227,8 @@ ul {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-lg);
-  align-items: start; /* columns don't stretch to equal height */
+  align-items: start;
+  /* columns don't stretch to equal height */
 }
 
 /* ----------------------------------------------------------
@@ -253,9 +265,17 @@ ul {
   flex-shrink: 0;
 }
 
-.dot-todo       { background: var(--color-todo); }
-.dot-inprogress { background: var(--color-inprogress); }
-.dot-done       { background: var(--color-done); }
+.dot-todo {
+  background: var(--color-todo);
+}
+
+.dot-inprogress {
+  background: var(--color-inprogress);
+}
+
+.dot-done {
+  background: var(--color-done);
+}
 
 .column-title {
   font-size: 0.9375rem;
@@ -339,9 +359,20 @@ ul {
   padding: 3px 10px;
 }
 
-.priority-high   { background: var(--color-high-bg);   color: var(--color-high); }
-.priority-medium { background: var(--color-medium-bg); color: #b45309; }
-.priority-low    { background: var(--color-low-bg);    color: #15803d; }
+.priority-high {
+  background: var(--color-high-bg);
+  color: var(--color-high);
+}
+
+.priority-medium {
+  background: var(--color-medium-bg);
+  color: #b45309;
+}
+
+.priority-low {
+  background: var(--color-low-bg);
+  color: #15803d;
+}
 
 /* Card action buttons (edit / delete) */
 .card-actions {
@@ -386,6 +417,7 @@ ul {
   /* Clamp to 2 lines */
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -396,6 +428,7 @@ ul {
   /* Clamp to 3 lines */
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -542,7 +575,7 @@ ul {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(91,94,244,.15);
+  box-shadow: 0 0 0 3px rgba(91, 94, 244, .15);
   background: var(--color-surface);
 }
 
@@ -577,7 +610,7 @@ ul {
 .form-group select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(91,94,244,.15);
+  box-shadow: 0 0 0 3px rgba(91, 94, 244, .15);
   background: var(--color-surface);
 }
 
@@ -601,6 +634,48 @@ ul {
   font-size: 0.9375rem;
   color: var(--color-text-muted);
   margin-bottom: var(--space-lg);
+}
+
+/* Form hint text below inputs */
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  margin-top: -2px;
+}
+
+/* Due date row on task cards */
+.card-due {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: var(--space-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+}
+
+.card-due .due-icon {
+  font-size: 0.8125rem;
+}
+
+/* Overdue — red */
+.card-due.due-overdue {
+  color: var(--color-danger);
+}
+
+.task-card.overdue-card {
+  border-left: 3px solid var(--color-danger);
+}
+
+/* Due within 1 hour — amber */
+.card-due.due-soon {
+  color: var(--color-medium);
+}
+
+.task-card.soon-card {
+  border-left: 3px solid var(--color-medium);
 }
 
 /* ----------------------------------------------------------
