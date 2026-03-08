@@ -1,0 +1,656 @@
+/* ==========================================================
+   TaskFlow — style.css
+   A clean, minimal, modern design system.
+   Author: TaskFlow UI  |  Version: 1.0
+   ========================================================== */
+
+/* ----------------------------------------------------------
+   1. DESIGN TOKENS (CSS Custom Properties)
+   ---------------------------------------------------------- */
+:root {
+  /* Color palette */
+  --color-bg:          #f4f5f7;
+  --color-surface:     #ffffff;
+  --color-border:      #e4e6ea;
+  --color-text-dark:   #1a1d23;
+  --color-text-muted:  #6b7280;
+  --color-text-light:  #9ca3af;
+
+  /* Brand accent */
+  --color-accent:      #5b5ef4;
+  --color-accent-dark: #4547d0;
+  --color-accent-soft: #ededff;
+
+  /* Column status dots */
+  --color-todo:        #94a3b8;
+  --color-inprogress:  #f59e0b;
+  --color-done:        #22c55e;
+
+  /* Priority badges */
+  --color-high:        #ef4444;
+  --color-high-bg:     #fef2f2;
+  --color-medium:      #f59e0b;
+  --color-medium-bg:   #fffbeb;
+  --color-low:         #22c55e;
+  --color-low-bg:      #f0fdf4;
+
+  /* Danger */
+  --color-danger:      #ef4444;
+  --color-danger-dark: #dc2626;
+
+  /* Typography */
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Spacing scale */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+
+  /* Transitions */
+  --transition: 0.18s ease;
+}
+
+/* ----------------------------------------------------------
+   2. CSS RESET + BASE
+   ---------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--color-bg);
+  color: var(--color-text-dark);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: 0.9375rem;
+}
+
+ul {
+  list-style: none;
+}
+
+/* ----------------------------------------------------------
+   3. HEADER
+   ---------------------------------------------------------- */
+.site-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  text-decoration: none;
+}
+
+.logo-icon {
+  font-size: 1.25rem;
+  color: var(--color-accent);
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  letter-spacing: -0.3px;
+}
+
+/* ----------------------------------------------------------
+   4. BUTTONS
+   ---------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 9px var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+}
+
+/* Primary */
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(91,94,244,.35);
+}
+.btn-primary:hover {
+  background: var(--color-accent-dark);
+  box-shadow: 0 4px 14px rgba(91,94,244,.4);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Ghost */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+.btn-ghost:hover {
+  background: var(--color-bg);
+  color: var(--color-text-dark);
+}
+
+/* Danger */
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+.btn-danger:hover {
+  background: var(--color-danger-dark);
+  transform: translateY(-1px);
+}
+
+/* ----------------------------------------------------------
+   5. BOARD LAYOUT
+   ---------------------------------------------------------- */
+.board-wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  align-items: start; /* columns don't stretch to equal height */
+}
+
+/* ----------------------------------------------------------
+   6. COLUMNS
+   ---------------------------------------------------------- */
+.column {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  transition: box-shadow var(--transition);
+}
+
+/* Highlight when dragging something over */
+.column.drag-over {
+  box-shadow: 0 0 0 2px var(--color-accent), var(--shadow-md);
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.column-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-todo       { background: var(--color-todo); }
+.dot-inprogress { background: var(--color-inprogress); }
+.dot-done       { background: var(--color-done); }
+
+.column-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  flex: 1;
+}
+
+.column-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 1px 8px;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* The area that receives dropped cards */
+.task-list {
+  flex: 1;
+  padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Visual drop placeholder */
+.task-list.drag-active {
+  background: var(--color-accent-soft);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* ----------------------------------------------------------
+   7. TASK CARDS
+   ---------------------------------------------------------- */
+.task-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  transition:
+    box-shadow var(--transition),
+    transform var(--transition),
+    opacity var(--transition);
+  position: relative;
+  user-select: none;
+}
+
+.task-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* While being dragged */
+.task-card.dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+  transform: scale(0.97);
+}
+
+/* Card top row: priority + actions */
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+/* Priority badges */
+.priority-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.priority-high   { background: var(--color-high-bg);   color: var(--color-high); }
+.priority-medium { background: var(--color-medium-bg); color: #b45309; }
+.priority-low    { background: var(--color-low-bg);    color: #15803d; }
+
+/* Card action buttons (edit / delete) */
+.card-actions {
+  display: flex;
+  gap: var(--space-xs);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.task-card:hover .card-actions {
+  opacity: 1;
+}
+
+.card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  transition: background var(--transition), color var(--transition);
+}
+
+.card-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-text-dark);
+}
+
+.card-btn.delete:hover {
+  background: var(--color-high-bg);
+  color: var(--color-high);
+}
+
+/* Card content */
+.card-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin-bottom: 4px;
+  /* Clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-desc {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  /* Clamp to 3 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Empty-column placeholders */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-xl) var(--space-md);
+  color: var(--color-text-light);
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  font-size: 0.8125rem;
+}
+
+/* ----------------------------------------------------------
+   8. MODAL OVERLAY
+   ---------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 17, 22, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-md);
+
+  /* Hidden by default */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ----------------------------------------------------------
+   9. MODAL BOX
+   ---------------------------------------------------------- */
+.modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 460px;
+  padding: var(--space-lg);
+
+  /* Slide-up entrance */
+  transform: translateY(12px);
+  transition: transform 0.22s ease;
+}
+
+.modal-overlay.open .modal {
+  transform: translateY(0);
+}
+
+.modal-sm {
+  max-width: 360px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.modal-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+  transition: background var(--transition), color var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--color-bg);
+  color: var(--color-text-dark);
+}
+
+/* ----------------------------------------------------------
+   10. FORM ELEMENTS
+   ---------------------------------------------------------- */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-dark);
+}
+
+.required {
+  color: var(--color-high);
+  margin-left: 2px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text-dark);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  resize: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(91,94,244,.15);
+  background: var(--color-surface);
+}
+
+/* Custom select wrapper */
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 9px 32px 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text-dark);
+  appearance: none;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(91,94,244,.15);
+  background: var(--color-surface);
+}
+
+/* Inline validation error messages */
+.field-error {
+  font-size: 0.8125rem;
+  color: var(--color-high);
+  min-height: 1em;
+}
+
+/* Modal footer buttons */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+/* Delete confirm modal */
+.delete-confirm-text {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-lg);
+}
+
+/* ----------------------------------------------------------
+   11. RESPONSIVE — Tablet (≤ 900px)
+   ---------------------------------------------------------- */
+@media (max-width: 900px) {
+  .board {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* "Done" column spans full width on its own row */
+  .column:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ----------------------------------------------------------
+   12. RESPONSIVE — Mobile (≤ 600px)
+   ---------------------------------------------------------- */
+@media (max-width: 600px) {
+  .header-inner {
+    padding: 0 var(--space-md);
+  }
+
+  .board-wrapper {
+    padding: var(--space-md);
+  }
+
+  .board {
+    grid-template-columns: 1fr;
+  }
+
+  /* All columns span full width */
+  .column:last-child {
+    grid-column: auto;
+  }
+
+  .modal {
+    padding: var(--space-md);
+  }
+}
+
+/* ----------------------------------------------------------
+   13. UTILITY CLASSES
+   ---------------------------------------------------------- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

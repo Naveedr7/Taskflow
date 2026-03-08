@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TaskFlow — A minimal, modern task management board to organize your work." />
+  <title>TaskFlow</title>
+  <!-- PWA: Web App Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <!-- PWA: Theme colour for mobile browser chrome -->
+  <meta name="theme-color" content="#7c3aed" />
+  <!-- PWA: Standalone mode flags for iOS -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="TaskFlow" />
+  <!-- PWA: Home-screen icon for iOS (Safari doesn't read manifest icons) -->
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts: Inter for clean, modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+
+  <!-- =========================================================
+       HEADER / NAVIGATION
+  ========================================================== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <!-- Logo / App Name -->
+      <div class="logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">TaskFlow</span>
+      </div>
+
+      <!-- Top-right actions -->
+      <div class="header-actions">
+        <button class="btn btn-primary" id="openAddTaskModal" aria-label="Add a new task">
+          + Add Task
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       MAIN BOARD — three Kanban columns
+  ========================================================== -->
+  <main class="board-wrapper">
+    <div class="board" id="board">
+
+      <!-- Column: To Do -->
+      <section class="column" id="col-todo" data-status="todo">
+        <div class="column-header">
+          <span class="column-dot dot-todo"></span>
+          <h2 class="column-title">To Do</h2>
+          <span class="column-count" id="count-todo">0</span>
+        </div>
+        <!-- Task cards will be injected here by script.js -->
+        <div class="task-list" id="list-todo" data-status="todo"></div>
+      </section>
+
+      <!-- Column: In Progress -->
+      <section class="column" id="col-inprogress" data-status="inprogress">
+        <div class="column-header">
+          <span class="column-dot dot-inprogress"></span>
+          <h2 class="column-title">In Progress</h2>
+          <span class="column-count" id="count-inprogress">0</span>
+        </div>
+        <div class="task-list" id="list-inprogress" data-status="inprogress"></div>
+      </section>
+
+      <!-- Column: Done -->
+      <section class="column" id="col-done" data-status="done">
+        <div class="column-header">
+          <span class="column-dot dot-done"></span>
+          <h2 class="column-title">Done</h2>
+          <span class="column-count" id="count-done">0</span>
+        </div>
+        <div class="task-list" id="list-done" data-status="done"></div>
+      </section>
+
+    </div><!-- /board -->
+  </main>
+
+  <!-- =========================================================
+       MODAL — Add / Edit Task
+  ========================================================== -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">New Task</h3>
+        <button class="modal-close" id="closeModal" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form class="modal-form" id="taskForm" novalidate>
+        <!-- Hidden field to track the task being edited -->
+        <input type="hidden" id="editTaskId" />
+
+        <!-- Task Title -->
+        <div class="form-group">
+          <label for="taskTitle">Title <span class="required">*</span></label>
+          <input type="text" id="taskTitle" placeholder="e.g. Design new dashboard" maxlength="80" required />
+          <span class="field-error" id="titleError"></span>
+        </div>
+
+        <!-- Task Description -->
+        <div class="form-group">
+          <label for="taskDesc">Description</label>
+          <textarea id="taskDesc" placeholder="Add some details about this task…" rows="3" maxlength="300"></textarea>
+        </div>
+
+        <!-- Priority -->
+        <div class="form-group">
+          <label for="taskPriority">Priority</label>
+          <div class="select-wrapper">
+            <select id="taskPriority">
+              <option value="low">🟢 Low</option>
+              <option value="medium" selected>🟡 Medium</option>
+              <option value="high">🔴 High</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Column -->
+        <div class="form-group">
+          <label for="taskStatus">Column</label>
+          <div class="select-wrapper">
+            <select id="taskStatus">
+              <option value="todo" selected>To Do</option>
+              <option value="inprogress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Form actions -->
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancelModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveTaskBtn">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       CONFIRM DELETE DIALOG
+  ========================================================== -->
+  <div class="modal-overlay" id="deleteOverlay" role="dialog" aria-modal="true" aria-labelledby="deleteTitle">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="deleteTitle">Delete Task?</h3>
+        <button class="modal-close" id="closeDeleteModal" aria-label="Close">&times;</button>
+      </div>
+      <p class="delete-confirm-text">This action cannot be undone. Are you sure you want to delete this task?</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="cancelDelete">Keep It</button>
+        <button class="btn btn-danger" id="confirmDelete">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+  <!-- PWA: Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('./sw.js')
+          .then((reg) => {
+            console.log('[PWA] Service Worker registered:', reg.scope);
+
+            // Notify user when a new version is available
+            reg.addEventListener('updatefound', () => {
+              const newWorker = reg.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // Optional: show a subtle toast / banner here
+                  console.log('[PWA] New version available — refresh to update.');
+                }
+              });
+            });
+          })
+          .catch((err) => console.error('[PWA] Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+
+</html>
